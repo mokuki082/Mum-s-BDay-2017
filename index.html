@@ -30,11 +30,11 @@
                     }
                 }
 
-                function ballBounce(ball, vInit, acc, dist) {
+                function ballBounce(ball) {
                     vInit = 0
                     acc = 0.001
                     dist = (window.innerHeight - 60) - ball.style.top.slice(0,-2);
-                    vFinal = Math.sqrt(vInit**2 + 2*acc*dist);
+                    var vFinal = Math.sqrt(vInit**2 + 2*acc*dist);
                     var time = Math.round((vFinal - vInit)/acc);
 
                     $(ball).animate({
