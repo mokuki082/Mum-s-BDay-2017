@@ -6,16 +6,22 @@
     </head>
     <body>
 
-        <div id='container'> </div>
+        <div id='container'><span id="clickAnywhere">滑鼠點擊窗口任一地點</span></div>
 
         <script type='text/javascript'>
 
             var main = function() {
                 var phrase = "HAPPY BIRTHDAY MUM";
 
+                // Generate ball objects
                 function init() {
                     // Generate a list of balls
                     var spacesEncountered = 0;
+
+                    var randomRGB = function(low=0, high=256) {
+                        return Math.round(Math.random() * (high-low) + low);
+                    }
+
                     for (var i = 0; i < phrase.length; i++) {
                         if (phrase[i] == " ") {
                             spacesEncountered++;
@@ -24,12 +30,16 @@
                         var ball = document.createElement("div");
                         ball.className = "ball";
                         ball.id = "ball" + (i - spacesEncountered);
+                        ball.style.backgroundColor = "rgb(" + randomRGB(25,256) + ',' +
+                                                            79 + ',' +
+                                                            79 + ")";
                         var str = document.createTextNode(phrase[i]);
                         ball.appendChild(str);
                         document.getElementById("container").appendChild(ball);
                     }
                 }
 
+                // Ball Bouncing animation
                 function ballBounce(ball) {
                     vInit = 0
                     acc = 0.001
@@ -39,21 +49,25 @@
 
                     $(ball).animate({
                         top:"+=" + dist
-                    }, time, "easeOutBounce");
-                }
-
-                function moveBall(startAtId, stopAtId, xs, ys, index=startAtId) {
-                    $(document.getElementById('ball'+startAtId)).animate({
-                        left: xs[index],
-                        top: ys[index]
-                    },500, "easeInQuad", function() {
-                        if (startAtId <= stopAtId) {
-                            moveBall(startAtId+1, stopAtId, xs, ys, index+1);
+                    }, time, "easeOutBounce", function() {
+                        // if last ball is clicked, rearrange all balls
+                        if (ballId == phrase.length - phrase.match(/\s/g).length) { // last ball
+                            rearrangeBalls();
                         }
                     });
                 }
 
+                // Move individual ball to a specified xy coordinate
+                function moveBall(ballId, x, y) {
+                    $(document.getElementById('ball'+ballId)).animate({
+                        left: x,
+                        top: y
+                    },500, "easeInQuad", function() {
+                        // TODO: if ballId  == last ball: play sound & animation
+                    });
+                }
 
+                // Rearrange balls into "Happy Birthday Mum"
                 function rearrangeBalls() {
                     words = phrase.split(" ");
                     var containerHeight = document.getElementById("container").offsetHeight;
@@ -62,30 +76,25 @@
                     var ballId = 0;
                     var xs = []
                     var ys = []
-                    var stopAtIds = []
                     for (i in words) {
                         for (j in words[i]) {
                             var x = j * 150 + (containerWidth - 8*150)/2;
                             var y = i * lineHeight;
-                            xs.push(x);
-                            ys.push(y);
+                            moveBall(ballId, x, y);
                             ballId++;
                         }
-                        stopAtIds.push(ballId-1);
-                    }
-
-                    var start = 0;
-                    for (i in stopAtIds) {
-                        console.log(start, stopAtIds[i]);
-                        moveBall(start, stopAtIds[i], xs, ys);
-                        start = stopAtIds[i] + 1;
                     }
 
                 }
 
-                // Make Balls appear as
+                // Make Balls appear at cursor position when clicked
                 var ballId = 0;
+                var clickAnywhere = document.getElementById("clickAnywhere");
                 document.onclick = function() {
+                    // Set click anywhere to hidden when first clicked
+                    if (clickAnywhere.style.visibility != "hidden") {
+                        clickAnywhere.style.visibility = "hidden";
+                    }
                     if (ballId < phrase.length - phrase.match(/\s/g).length) {
                         var ball = document.getElementById('ball'+ballId);
                         // Pop Out Animation
@@ -101,10 +110,6 @@
                         // Bounce animation
                         ballBounce(ball);
                         ballId++;
-
-                        if (ballId == phrase.length - phrase.match(/\s/g).length) { // last ball
-                            rearrangeBalls();
-                        }
                     }
                 }; // end document onclick
 
@@ -136,16 +141,31 @@
                 color:white;
                 vertical-align: top;
                 line-height:120px;
-
+                top:0;
+                left:0;
             }
 
             #container {
-                width: 80%;
-                height:80%;
-                padding:10%;
+                width: 100%;
+                height:100%;
                 display:block;
                 position: absolute;
-                background-color: rgb(215,79,79);
+                background-color: rgb(203,176,142);
+            }
+
+            #clickAnywhere {
+                width:20%;
+                height:10%;
+                top:45%;
+                left:40%;
+                display:block;
+                position:absolute;
+                color:#FFFFFF;
+                font-family: monospace;
+                font-size:15px;
+                line-height:10%;
+                text-align: center;
+
             }
         </style>
     </body>
