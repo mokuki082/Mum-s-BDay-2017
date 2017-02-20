@@ -79,7 +79,7 @@
                     for (i in words) {
                         for (j in words[i]) {
                             var x = j * 150 + (containerWidth - 8*150)/2;
-                            var y = i * lineHeight;
+                            var y = i * lineHeight + (lineHeight  - 120)/2;
                             moveBall(ballId, x, y);
                             ballId++;
                         }
