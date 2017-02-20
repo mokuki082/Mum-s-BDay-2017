@@ -17,7 +17,9 @@
                 var balls = [];
                 var pop = new Audio("snd/pop.wav");
                 var finish = new Audio("snd/tada.wav");
-
+                var backgroundMusic = new Audio("snd/bass.mp3");
+                backgroundMusic.play();
+                backgroundMusic.loop = true;
                 // Generate ball objects
                 function init() {
                     // Generate a list of balls
