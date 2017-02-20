@@ -15,6 +15,9 @@
                 var ballsRearranged = false;
                 var phrase = "HAPPY BIRTHDAY MUM♥";
                 var balls = [];
+                var pop = new Audio("snd/pop.wav");
+                var finish = new Audio("snd/tada.wav");
+
                 // Generate ball objects
                 function init() {
                     // Generate a list of balls
@@ -23,7 +26,6 @@
                     var randomRGB = function(low=0, high=255) {
                         return Math.round(Math.random() * (high-low) + low);
                     }
-
                     for (var i = 0; i < phrase.length; i++) {
                         if (phrase[i] == " ") {
                             spacesEncountered++;
@@ -45,8 +47,8 @@
 
                 // Ball Bouncing animation
                 function ballBounce(ball) {
-                    vInit = 0
-                    acc = 0.001
+                    vInit = 0;
+                    acc = 0.001;
                     dist = (window.innerHeight - 60) - ball.style.top.slice(0,-2);
                     var vFinal = Math.sqrt(vInit*vInit + 2*acc*dist);
                     var time = Math.round((vFinal - vInit)/acc);
@@ -55,7 +57,7 @@
                         top:"+=" + dist
                     }, time, "easeOutBounce", function() {
                         // if last ball is clicked, rearrange all balls
-                        if (ballId == phrase.length - phrase.match(/\s/g).length) { // last ball
+                        if (ballId == balls.length) { // last ball
                             rearrangeBalls();
                         }
                     });
@@ -67,7 +69,9 @@
                         left: x,
                         top: y
                     },500, "easeInQuad", function() {
-                        // TODO: if ballId  == last ball: play sound & animation
+                        if (ballId == balls.length - 1) { // last ball
+                            finish.play();
+                        }
                     });
                 }
 
@@ -95,12 +99,17 @@
                 // Make Balls appear at cursor position when clicked
                 var ballId = 0;
                 var clickAnywhere = document.getElementById("clickAnywhere");
+                var stopOnClick = false;
                 document.onclick = function() {
                     // Set click anywhere to hidden when first clicked
                     if (clickAnywhere.style.visibility != "hidden") {
                         clickAnywhere.style.visibility = "hidden";
                     }
-                    if (ballId < phrase.length - phrase.match(/\s/g).length) {
+                    if (!stopOnClick) {
+                        if (ballId == balls.length - 1) {
+                            stopOnClick = true;
+                        }
+                        pop.play();
                         var ball = document.getElementById('ball'+ballId);
                         // Pop Out Animation
                         ball.style.top = event.clientY + 'px';
